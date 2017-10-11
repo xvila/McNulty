@@ -169,3 +169,6 @@ About
 #Credentials
 password.py
 sqlkey.py
+
+# Data Folders
+data/*
