@@ -1,6 +1,6 @@
 import scrapy
 
-class MovieSpider(scrapy.Spider):
+class YelpSpider(scrapy.Spider):
     name = 'scrape_yelp'
 
     custom_settings = {
@@ -9,17 +9,10 @@ class MovieSpider(scrapy.Spider):
         "HTTPCACHE_ENABLED": True
     } 
     start_urls = ['https://www.yelp.com/search?find_desc=Restaurants&find_loc=Brooklyn%2C+NY']
-    
-    # for i in range(1970,2016):
-    #     #base = 'http://www.imdb.com/search/title?release_date={}'
-    #     base = 'http://www.imdb.com/search/title?year={},{}&title_type=feature&sort=moviemeter,asc'
-    #     url = base.format(i,i)
-    #     start_urls.append(url)
 
     def parse(self, response):
-        # Extract the links to the individual movie
+        # Extract the links to the individual restaunant
         static_yelp_url = 'https://www.yelp.com'
-        #static_list_url = 'http://www.imdb.com/search/title'
 
         for href in response.xpath('//h3/span/a/@href').extract():
             href = static_yelp_url + href
@@ -35,56 +28,65 @@ class MovieSpider(scrapy.Spider):
     def parse_yelp(self,response): 
         url = response.request.meta['url']
         try:
-            name = response.xpath('//div[@class="title_wrapper"]/h1/text()').extract()[0].strip()
+            name = response.xpath('//h1[@class="biz-page-title embossed-text-white shortenough"]/text()').extract()[0].strip()
         except:
             name = None
         try:
-            budget = response.xpath('//div[@class="txt-block"]/h4/text()[contains(.,"Budget")]/../../text()').extract()[1].strip()
-        except:
-            budget = None
-        try:
-            box_office = response.xpath('//div[@class="txt-block"]/h4/text()[contains(.,"Gross")]/../../text()').extract()[1].strip()
-        except:
-            box_office = None
-        try:
-            release_date = response.xpath('//div[@class="txt-block"]/h4/text()[contains(.,"Release Date:")]/../../text()').extract()[1].strip()
-        except:
-            release_date = None
-        try:
-            user_rating = response.xpath('//div[@class="ratingValue"]//span/text()').extract()[0]
-        except:
-            user_rating = None
-        try:
-            genre = response.xpath('//div[@itemprop="genre"]/a/text()').extract()
-        except:
-            genre = None
-        try:
-            year = response.xpath('//span[@id="titleYear"]/a/text()').extract()[0]
-        except:
-            year = None
-        try:
-            rating = response.xpath('//meta[@itemprop="contentRating"]/../text()').extract()[1].strip()
+            rating = response.xpath('//div[@class="biz-rating biz-rating-very-large clearfix"]/div/@title').extract()[0].strip()
         except:
             rating = None
         try:
-            runtime = response.xpath('//div[@class="txt-block"]/time/text()').extract()[0]
+            address = response.xpath('//strong[@class="street-address"]/address/text()').extract()[0].strip()
         except:
-            runtime = None
+            address = None
         try:
-            director = response.xpath('//span[@itemprop="director"]/a/span/text()').extract()[0]
+            review_count = response.xpath('//span[@class="review-count rating-qualifier"]/text()').extract()[0].strip()
         except:
-            director = None
-     
+            review_count = None
+        try:
+            transit = response.xpath('//b[@class="transit-line inline-block"]/text()').extract().strip()
+        except:
+            transit = None
+        try:
+            category = response.xpath('//span[@class="category-str-list"]/a/text()').extract()
+            if len(category)%2 == 0:
+                idx = len(category)/2
+            else:
+                idx = (len(category)/2)+1
+            category = category[:idx]
+        except:
+            category = None
+        try:
+            price_range = response.xpath('//span[@class="business-attribute price-range"]/text()').extract()[0]
+        except:
+            price_range = None
+        try:
+            hours = response.xpath('//table[@class="table table-simple hours-table"]/tbody/tr').extract()
+        except:
+            hours = None
+        try:
+            price_desc = response.xpath('//dd[@class="nowrap price-description"]/text()').extract()[0].strip()
+        except:
+            price_desc = None
+        try:
+            attribute_answers = response.xpath('//dt[@class="attribute-key"]/../dd').extract()[2:].strip()
+        except:
+            attribute_answers = None
+        try:
+            attribute_key = response.xpath('//dt[@class="attribute-key"]').extract()[2:].strip()
+        except:
+            attribute_key = None
         yield{
         'url': url,
         'name': name,
-        'budget': budget,
-        'box_office': box_office,
-        'user_rating': user_rating,
-        'genre': genre,
-        'year': year,
         'rating': rating,
-        'runtime': runtime,
-        'director': director,
-        'release_date': release_date
+        'address': address,
+        'review_count': review_count,
+        'transit': transit,
+        'category': category,
+        'price_range': price_range,
+        'hours': hours,
+        'price_desc': price_desc,
+        'attribute_key': attribute_key,
+        'attribute_answers': attribute_answers
         }
