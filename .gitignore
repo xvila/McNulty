@@ -15,14 +15,14 @@
 # *.pyc
 
 # # OSX Filesystem thing
-# .DS_Store
-# # Ignore Database files
-# *.db
-# *.sqlite
+.DS_Store
+# Ignore Database files
+*.db
+*.sqlite
 
-# # Ignore data files
-# *.csv
-# *.json
+# Ignore data files
+*.csv
+*.json
 Skip to content
 This repository
 Search
@@ -169,6 +169,7 @@ About
 #Credentials
 password.py
 sqlkey.py
+creds.py
 
 # Data Folders
 data/*
