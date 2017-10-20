@@ -178,8 +178,10 @@ def query_api(term, location):
     business_review_count = businesses[0]['review_count']
     business_is_closed = businesses[0]['is_closed']
     business_categories = businesses[0]['categories']
+    business_coordinates = businesses[0]['coordinates']
+    business_location = businesses[0]['location']
     
-    return business_id,business_name,brating,bprice,breview_count,bis_closed,bcategories
+    return business_id,business_name,business_rating,business_price,business_review_count,business_is_closed,business_categories,business_coordinates,business_location
     
 
 def main():
@@ -194,7 +196,7 @@ def main():
     input_values = parser.parse_args()
 
     try:
-        business_id,business_name,business_rating,business_price,business_review_count,business_is_closed,business_categories =  query_api(input_values.term, input_values.location)
+        business_id,business_name,business_rating,business_price,business_review_count,business_is_closed,business_categories,business_coordinates,business_location =  query_api(input_values.term, input_values.location)
 
         yelp_dict = {}
         yelp_dict['business_id'] = business_id
@@ -204,6 +206,9 @@ def main():
         yelp_dict['review_count'] = business_review_count
         yelp_dict['is_closed'] = business_is_closed
         yelp_dict['categories'] = business_categories
+        yelp_dict['coordinates'] = business_coordinates
+        yelp_dict['location'] = business_location
+
         #query_api(input_values.term, input_values.location)
          
     except HTTPError as error:
